@@ -1,75 +1,97 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import React from 'react'
+import { Alert, Button, SafeAreaView, ScrollView, Share, StyleSheet, Text } from 'react-native'
+import coran from '../../assets/book/coran.js'
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+function getVerseOfTheDay() {
+  const total = coran.length
+  const today = new Date()
+  // Nombre de jours depuis une date de référence (ex: 1er janvier 2024)
+  const ref = new Date(2024, 0, 1)
+  const diffDays = Math.floor((today - ref) / (1000 * 60 * 60 * 24))
+  const index = diffDays % total
+  return coran[index]
+}
 
 export default function HomeScreen() {
+  const verse = getVerseOfTheDay()
+  const content = verse.content[0]
+  const title = verse.title.split('-')[0].trim()
+  const verseNumber = verse.title.split('-')[1].trim()
+
+  const handleShare = async () => {
+    try {
+      const message = `${content.arabic}\n\n${content.reference}\n\nTélécharger l'application : https://coran.app`
+      await Share.share({
+        message,
+        title: 'Verset du jour',
+      })
+    } catch (error) {
+      Alert.alert('Erreur', 'Impossible de partager le verset.')
+    }
+  }
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
-  );
+    <SafeAreaView style={styles.container}>
+      <ScrollView 
+        contentContainerStyle={styles.container}
+      >
+        <Text style={styles.arabic}>{content.arabic}</Text>
+        <Text style={styles.reference}>{content.reference}</Text>
+        <Button title="Partager ce verset" onPress={handleShare} />
+      </ScrollView>
+    </SafeAreaView>
+  )
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
     alignItems: 'center',
-    gap: 8,
+    justifyContent: 'center',
+    paddingBottom: 128,
+    paddingTop: 64,
+    paddingHorizontal: 24,
   },
-  stepContainer: {
-    gap: 8,
+  surah: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#111',
     marginBottom: 8,
+    textAlign: 'center',
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  altTitle: {
+    fontSize: 16,
+    color: '#888',
+    fontWeight: '400',
   },
-});
+  arabic: {
+    fontSize: 32,
+    lineHeight: 60,
+    fontWeight: '700',
+    color: '#111',
+    marginVertical: 16,
+    textAlign: 'center',
+    fontFamily: 'Geeza Pro', // iOS font for Arabic
+  },
+  transliteration: {
+    fontSize: 16,
+    color: '#444',
+    fontStyle: 'italic',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  text: {
+    fontSize: 18,
+    color: '#111',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  reference: {
+    fontSize: 14,
+    color: '#aaa',
+    marginTop: 12,
+    textAlign: 'center',
+  },
+})
+
