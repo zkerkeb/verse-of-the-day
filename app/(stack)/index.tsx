@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
   viewShot: {
     backgroundColor: '#ffffff',
     padding: 20,
-    borderRadius: 20,
+    // borderRadius: 20,
     width: '100%',
     minHeight: 100,
     alignSelf: 'stretch',
